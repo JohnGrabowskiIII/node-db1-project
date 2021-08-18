@@ -67,6 +67,20 @@ exports.checkAccountNameUnique = (req, res, next) => {
   // DO YOUR MAGIC
 }
 
-exports.checkAccountId = (req, res, next) => {
-  // DO YOUR MAGIC
+exports.checkAccountId = async (req, res, next) => {
+  
+  const {id} = req.params;
+
+  try {
+    const account = await getById(id)
+    if (account) {
+      req.account = account;
+      next();
+    } else {
+      res.status(404).json({message: "account not found"});
+    }
+  } catch (err) {
+      res.status(500).json({message: "Could not retrieve user at this time"});
+  }
+
 }
