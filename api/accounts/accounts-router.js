@@ -1,7 +1,12 @@
 const router = require('express').Router()
 
-router.get('/', (req, res, next) => {
-  // DO YOUR MAGIC
+const {getAllAccounts} = require('./accounts-middleware')
+
+router.get('/', getAllAccounts, (req, res, next) => {
+
+  const {accounts} = req
+
+  res.status(200).json(accounts)
 })
 
 router.get('/:id', (req, res, next) => {
