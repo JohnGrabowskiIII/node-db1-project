@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const {getAllAccounts, checkAccountId, checkAccountPayload, checkAccountNameUnique} = require('./accounts-middleware');
 
-const {create} = require("./accounts-model")
+const {create, updateById, deleteById} = require("./accounts-model")
 
 router.get('/', getAllAccounts, (req, res, next) => {
 
@@ -36,12 +36,30 @@ router.post('/', checkAccountNameUnique, checkAccountPayload, async (req, res, n
 
 })
 
-router.put('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.put('/:id', checkAccountId, checkAccountPayload, async (req, res, next) => {
+
+  const {id} = req.params;
+  const {body} = req;
+
+  try {
+    const updatedAccount = await updateById(id, body);
+    res.status(200).json(updatedAccount)
+  } catch(err) {
+    res.status(500).json({message: "Unable to handle request at this time"})
+  }
+
 });
 
-router.delete('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.delete('/:id', checkAccountId, async (req, res, next) => {
+
+  const {id} = req.params;
+
+  try {
+    const deletedAccount = await deleteById(id)
+    res.status(200).json(deletedAccount)
+  } catch(err) {
+    res.status(500).json({message: "Unable to handle request at this time"})
+  }
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
