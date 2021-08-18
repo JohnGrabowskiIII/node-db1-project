@@ -1,5 +1,5 @@
 
-const {getAll, getById} = require("./accounts-model")
+const {getAll, getByName, getById} = require("./accounts-model")
 
 exports.getAllAccounts = async (req, res, next) => {
 
@@ -20,7 +20,6 @@ const payloadValidityHelper = (req) => {
 
   const doNameAndBudgetExist = name && budget;
   const isNameString = typeof name === 'string';
-
   const isNameValidLength = name.length >= 3 && name.length <= 100; 
   const isBudgetNumber = typeof budget === 'number';
   const isBudgetInRange = budget >= 0 && budget <= 1000000;
@@ -63,8 +62,22 @@ exports.checkAccountPayload = (req, res, next) => {
 
 }
 
-exports.checkAccountNameUnique = (req, res, next) => {
-  // DO YOUR MAGIC
+exports.checkAccountNameUnique = async (req, res, next) => {
+
+  let {name} = req.body;
+  name = name ? name.trim() : "";
+
+  try {
+    const accountName = await getByName(name);
+    if (accountName) {
+      res.status(404).json({message: "That name is taken"})
+    } else {
+      next();
+    }
+  } catch(err) {
+    res.status(500).json({message: "Could not retrieve user at this time"});
+  }
+
 }
 
 exports.checkAccountId = async (req, res, next) => {
