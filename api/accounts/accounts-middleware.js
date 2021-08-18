@@ -1,6 +1,18 @@
 
 const {getAll, getById} = require("./accounts-model")
 
+exports.getAllAccounts = async (req, res, next) => {
+
+  try {
+    const allAccounts = await getAll();
+    req.accounts = allAccounts ? allAccounts : [];
+    next();
+  } catch(err) {
+    res.status(500).json({message: "Error retrieving accounts at this time"});
+  }
+
+}
+
 const payloadValidityHelper = (req) => {
 
   let {name, budget} = req.body;
@@ -20,18 +32,6 @@ const payloadValidityHelper = (req) => {
   if (!isBudgetInRange) return "Out of Range"
 
   return "Valid";
-
-}
-
-exports.getAllAccounts = async (req, res, next) => {
-
-  try {
-    const allAccounts = await getAll();
-    req.accounts = allAccounts ? allAccounts : [];
-    next();
-  } catch(err) {
-    res.status(500).json({message: "Error retrieving accounts at this time"});
-  }
 
 }
 
@@ -57,7 +57,6 @@ exports.checkAccountPayload = (req, res, next) => {
       next();
       break;
     default:
-      console.log('defaulting')
       res.status(500).json({message: "Unable to handle request at this time"});
       break;
   }
