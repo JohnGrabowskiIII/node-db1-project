@@ -3,12 +3,12 @@ const {getAll, getById} = require("./accounts-model")
 
 const payloadValidityHelper = (req) => {
 
-  const {body} = req;
-  let {name, budget} = body;
-  name = name.trim();
+  let {name, budget} = req.body;
+  name = name ? name.trim() : "";
 
   const doNameAndBudgetExist = name && budget;
   const isNameString = typeof name === 'string';
+
   const isNameValidLength = name.length >= 3 && name.length <= 100; 
   const isBudgetNumber = typeof budget === 'number';
   const isBudgetInRange = budget >= 0 && budget <= 1000000;
@@ -57,6 +57,7 @@ exports.checkAccountPayload = (req, res, next) => {
       next();
       break;
     default:
+      console.log('defaulting')
       res.status(500).json({message: "Unable to handle request at this time"});
       break;
   }
